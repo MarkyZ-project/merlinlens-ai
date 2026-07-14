@@ -10,21 +10,22 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css">
+  <!-- TensorFlow.js + MobileNet via CDN (più affidabile del bundling) -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
 </head>
 <body>
   <div id="app">
-    <!-- Camera Feed -->
     <video id="webcam" autoplay playsinline muted></video>
-    <canvas id="snapshot-canvas"></canvas>
 
-    <!-- Scanning Overlay -->
+    <!-- Scan Overlay -->
     <div class="scan-overlay" id="scan-overlay">
       <div class="scan-frame">
         <div class="scan-corner tl"></div>
         <div class="scan-corner tr"></div>
         <div class="scan-corner bl"></div>
         <div class="scan-corner br"></div>
-        <div class="scan-line" id="scan-line"></div>
+        <div class="scan-line"></div>
       </div>
     </div>
 
@@ -60,9 +61,7 @@
 
     <!-- Result Panel -->
     <div class="result-panel" id="result-panel">
-      <div class="result-top-predictions" id="predictions-list">
-        <!-- Predictions injected here -->
-      </div>
+      <div class="result-top-predictions" id="predictions-list"></div>
       <div class="result-main">
         <div class="result-icon" id="result-icon">🔍</div>
         <div class="result-info">
@@ -82,6 +81,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./main.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
