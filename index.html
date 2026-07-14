@@ -1,54 +1,87 @@
 <!DOCTYPE html>
 <html lang="it">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>MerlinLens AI</title>
-    <link rel="stylesheet" href="./style.css">
-    <!-- Google Fonts for modern typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <div id="app">
-      <div class="camera-container">
-        <video id="webcam" autoplay playsinline muted></video>
-        <div class="viewfinder">
-          <div class="corner top-left"></div>
-          <div class="corner top-right"></div>
-          <div class="corner bottom-left"></div>
-          <div class="corner bottom-right"></div>
-        </div>
-      </div>
-      
-      <div class="ui-layer">
-        <header>
-          <h1>MerlinLens</h1>
-        </header>
-        
-        <div class="controls">
-          <button id="switch-camera-btn" class="icon-btn" aria-label="Switch Camera">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle><polyline points="18 10 18 13 21 13"></polyline></svg>
-          </button>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="MerlinLens AI - Riconosci qualsiasi oggetto con la fotocamera usando l'intelligenza artificiale" />
+  <meta name="theme-color" content="#0a0a1a" />
+  <title>MerlinLens AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Camera Feed -->
+    <video id="webcam" autoplay playsinline muted></video>
+    <canvas id="snapshot-canvas"></canvas>
 
-        <div class="result-panel">
-          <div class="status-indicator" id="status-indicator">
-            <div class="spinner"></div>
-            <span>Caricamento IA in corso...</span>
-          </div>
-          <div id="prediction-container" class="hidden">
-            <h2 id="prediction-text">--</h2>
-            <div class="confidence-bar-container">
-              <div id="confidence-bar" class="confidence-bar" style="width: 0%"></div>
-            </div>
-            <span id="confidence-text">0%</span>
-          </div>
+    <!-- Scanning Overlay -->
+    <div class="scan-overlay" id="scan-overlay">
+      <div class="scan-frame">
+        <div class="scan-corner tl"></div>
+        <div class="scan-corner tr"></div>
+        <div class="scan-corner bl"></div>
+        <div class="scan-corner br"></div>
+        <div class="scan-line" id="scan-line"></div>
+      </div>
+    </div>
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="url(#grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#818cf8"/><stop offset="100%" style="stop-color:#c084fc"/></linearGradient></defs>
+          <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/>
+        </svg>
+        <span>MerlinLens</span>
+      </div>
+      <button id="btn-switch" class="btn-icon" aria-label="Cambia fotocamera">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </button>
+    </header>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+      <div class="loading-content">
+        <div class="loading-ring">
+          <div class="ring-segment"></div>
+          <div class="ring-segment"></div>
+          <div class="ring-segment"></div>
+        </div>
+        <h2>MerlinLens AI</h2>
+        <p id="loading-text">Caricamento modello IA...</p>
+        <div class="loading-bar-track">
+          <div class="loading-bar-fill" id="loading-bar"></div>
         </div>
       </div>
     </div>
-    <script type="module" src="./main.js"></script>
-  </body>
+
+    <!-- Result Panel -->
+    <div class="result-panel" id="result-panel">
+      <div class="result-top-predictions" id="predictions-list">
+        <!-- Predictions injected here -->
+      </div>
+      <div class="result-main">
+        <div class="result-icon" id="result-icon">🔍</div>
+        <div class="result-info">
+          <h2 id="result-name">Punta la fotocamera</h2>
+          <p id="result-confidence">su un oggetto</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Overlay -->
+    <div class="error-overlay hidden" id="error-overlay">
+      <div class="error-content">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        <h2>Fotocamera non disponibile</h2>
+        <p id="error-text">Consenti l'accesso alla fotocamera nelle impostazioni del browser.</p>
+        <button id="btn-retry" class="btn-primary">Riprova</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="./main.js"></script>
+</body>
 </html>
